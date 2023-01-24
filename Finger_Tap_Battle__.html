@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<!-- saved from url=(0033)http://127.0.0.1:63106/index.html -->
+<html data-brackets-id="32" lang="en"><head data-brackets-id="33"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta data-brackets-id="35" http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta data-brackets-id="36" name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-brackets-id="37">Finger Tap Battle |🤺</title>
+    <style data-brackets-id="38">
+      body {
+        font-family: monospace;
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+        overscroll-behavior: contain;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      .playerBottom {
+        height: 100vh;
+        background-color: red;
+      }
+      .playerTop {
+        position: absolute;
+        height: 50%;
+        width: 100%;
+        background-color: skyblue;
+      }
+
+      /* listening layers */
+      .layers {
+        opacity: 1;
+        /* background-color: black; */
+        width: 100%;
+        z-index: 100;
+        position: absolute;
+        height: 100vh;
+      }
+      .playerBottomLayer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-top: 4px white dashed;
+        height: 50%;
+      }
+      .playerTopLayer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 50%;
+      }
+
+      .textlg {
+        width: 100%;
+        text-align: center;
+        font-size: 8em;
+        color: black;
+        -webkit-text-fill-color: white;
+        -webkit-text-stroke-width: 4px;
+        -webkit-text-stroke-color: black;
+      }
+
+      .strokeText {
+        color: black;
+        -webkit-text-fill-color: white;
+        -webkit-text-stroke-width: 2px;
+        -webkit-text-stroke-color: black;
+      }
+
+      .rotate180 {
+        transform: rotate(180deg);
+      }
+
+
+      .menu-container{
+        /* visibility: hidden; */
+        height: 100vh;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        z-index: 1000;
+      }
+      .menu{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border: 0.5em solid black;
+        border-right: 0;
+        border-left: 0;
+        width: 100%;
+        background-color: white;
+        box-sizing: border-box;
+        padding-bottom: 2rem;
+      }
+
+      .menu h1{
+        font-size: 3rem;
+        margin: 0.6em 0 0.2em 0;
+      }
+
+      .menu-controls button{
+        padding: 0.5em;
+        margin: 3em  0.5em 0 0.5em;
+        font-weight: 600;
+        font-size: 0.8em;
+        background-color: white;
+        border: 2px black solid;
+        box-shadow: 4px 4px black;
+      }
+      
+      .menu-controls button:hover {
+        box-shadow: 2px 2px black;
+      }
+      
+
+      .top50{
+        top: 50%;
+      }
+      .bottom50{
+        bottom: 50%;
+        color: black;
+      }
+
+      .timer-container{
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        position: absolute;
+        z-index: 100;
+        margin: auto;
+      }
+      .timer{
+        text-align: center;
+        background-color: black;
+        padding: 0 8px 0 8px;
+
+      }
+      .timer span{
+        color: white;
+        font-size: 2em;
+      }
+      #subHeading{
+        text-align: center;
+        padding: 0 6px 0 6px;
+      }
+      .midLine{
+        margin: 0;
+        z-index: 102;
+        border-top: 4px white dashed ;
+        position: absolute;
+        width: 100%;
+        top: 50vh;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body data-brackets-id="39">
+
+    <div data-brackets-id="40" class="timer-container top50">
+      <div data-brackets-id="41" class="timer ">
+        <span data-brackets-id="42" id="timer">Hello, Dev!</span>
+      </div>
+    </div>
+    <!-- player top timer -->
+    <div data-brackets-id="43" class="timer-container bottom50 rotate180">
+      <div data-brackets-id="44" class="timer ">
+        <span data-brackets-id="45" id="timer">How are you?</span>
+      </div>
+    </div>
+    
+    <div data-brackets-id="46" class="menu-container">
+      
+      <div data-brackets-id="47" class="menu">
+        <h1 data-brackets-id="48" id="heading" class="">🤘 New Game 🤘</h1>
+          <span data-brackets-id="49" id="subHeading">Finger Tap Battle 🤺 </span>
+          <div data-brackets-id="50" class="menu-controls">
+            <button data-brackets-id="51" onclick="startGame(timer = true)">👊 Play </button>
+            <button data-brackets-id="52" onclick="clearSession()">🤝 Reset </button>
+          </div>
+        </div>
+    </div>
+
+    <hr data-brackets-id="53" class="midLine">
+
+    <div data-brackets-id="54" class="layers">
+      <div data-brackets-id="55" class="playerTopLayer">
+        <span data-brackets-id="56" class="textlg" id="topPlayerScore">0</span>
+      </div>
+      <div data-brackets-id="57" class="playerBottomLayer">
+        <span data-brackets-id="58" class="textlg rotate180" id="bottomPlayerScore">0</span>
+      </div>
+    </div>
+    <div data-brackets-id="59" class="playerTop"></div>
+    <div data-brackets-id="60" class="playerBottom"></div>
+  
+
+  <script data-brackets-id="61">
+    //full screen
+    var elem = document.body;
+
+/* View in fullscreen */
+function openFullscreen() {
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) { /* Safari */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE11 */
+    elem.msRequestFullscreen();
+  }
+}
+  </script>
+    
+  <script data-brackets-id="62">
+    const newStats = {
+      top: 0,
+      bottom: 0,
+      increment: 5 // percent of H
+    };
+
+    const screenH = document.body.scrollHeight;
+    const screenW = document.body.scrollWidth;
+
+    let increment;
+    let beginGame = false;
+    let timesUp = false;
+    let countDownInterval;
+
+    let topPlayerScore;
+    let bottomPlayerScore;
+
+    let topPlayerTapCounts =0;
+    let bottomPlayerTapCounts =0;
+
+    let topPlayer = document.querySelector(".playerTop");
+    let bottomPlayer = document.querySelector(".playerBottom");
+
+    //equal listening layers
+    let topPlayerLayer = document.querySelector(".playerTopLayer");
+    let bottomPlayerLayer = document.querySelector(".playerBottomLayer");
+
+    //layers
+    let layerContainer = document.querySelector(".layers");
+
+    
+
+    const gameMenu = (visible = true , topView180 = false) =>{
+      const menu =document.querySelector(".menu-container");
+      if(topView180)
+        menu.classList.add("rotate180");
+      else
+        menu.classList.remove("rotate180");
+
+      
+      if(!beginGame){
+        gameMenuHeading("✋ Penalty 👍", topView180 ? "red"  : "skyblue");
+        gameMenuSubHeading(`${topView180 ?  "Red"  : "Blue"} won a penalty point because ${!topView180 ?"Red" : "Blue"} began tapping before the countdown.`)
+      }
+      else if(timesUp){
+        //times up
+        gameMenuHeading(`${"Times Up!!"}`, topView180  ? "red"  : "skyblue");
+        gameMenuSubHeading(`${topView180 ? "Red"  : "Blue"} tapped the screen ${ topView180? bottomPlayerTapCounts : topPlayerTapCounts} times.`)
+      }
+      else{
+        gameMenuHeading(`${topView180 ? "Red Won!!"   : "Blue Won!!"}`, topView180  ? "red"  : "skyblue");
+        gameMenuSubHeading(`${topView180 ? "Red"  : "Blue"} tapped the screen ${ topView180? bottomPlayerTapCounts : topPlayerTapCounts} times.`)
+      }
+      
+      if(visible)
+        return menu.style.visibility = 'visible';
+      return menu.style.visibility = 'hidden';
+    }
+
+    const gameMenuHeading = (text = "🤘 New Game 🤘" , color = "black") =>{
+      const heading = document.querySelector("#heading");
+      heading.innerHTML = text;
+      return heading.style.color = color;
+    }
+    
+    const gameMenuSubHeading = (text = "🤘 New Game 🤘" ) =>{
+      const heading = document.querySelector("#subHeading");
+      return heading.innerHTML = text;
+    }
+
+    const timerSpanValue = (value) =>{
+      const timerSpans = document.querySelectorAll("#timer");
+      timerSpans.forEach(element => {
+        element.innerHTML = value;
+      });
+    }
+
+    const layerContainerVisiblity = (visible = true)=>{
+      return layerContainer.style.visibility =  visible ?  "visible" : "hidden";
+    }
+    const startGame = (countDowntimer = true, matchTime = 15 ) =>{
+        openFullscreen();
+
+        layerContainerVisiblity(false);
+
+        timerSpanValue("3");
+        gameMenu(visibility = false);
+
+        let count =3;
+        countDownInterval = setInterval(()=>{
+          
+          if(--count == 0){
+            if(!beginGame){
+                timerSpanValue("Tap 👆");
+                beginGame = true;
+                count = matchTime;
+              }
+            else{
+              // time up
+              timerSpanValue(0);
+              // console.log("times up!!");
+              timesUp = true;
+              checkWinner(timesup = true);
+              clearInterval(countDownInterval); 
+            }
+          }
+          else{
+            timerSpanValue(count);
+          }
+
+        },1000)
+      
+    }
+    
+    const setDynamicIncrement = (percentOfH = 3)=>{
+      newStats.increment =  screenH * percentOfH * 0.01;
+    }
+    const getStats = () => {
+      if (sessionStorage.getItem("stats")) {
+        const stats = JSON.parse(sessionStorage.getItem("stats"));
+        return stats;
+      }
+      return 0;
+    };
+
+    const resetLayer = () => {
+      topPlayerTapCounts =0;
+      bottomPlayerTapCounts=0;
+      return (topPlayer.style.height = "50%");
+    };
+
+    const newGame = (reset = false) => {
+      if (reset) {
+        sessionStorage.clear();
+        resetLayer();
+      }
+
+      if (getStats()) {
+        let stats = getStats();
+        topPlayerScore = stats["top"];
+        bottomPlayerScore = stats["bottom"];
+        increment = stats["increment"];
+        return updateStatsScoreUI(topPlayerScore, bottomPlayerScore)
+      } else {
+        sessionStorage.setItem("stats", JSON.stringify(newStats));
+        return increment = newStats.increment;
+      }
+    };
+
+    const updateStatsScore = (topWinner) => {
+      let stats = getStats();
+      if (stats) {
+        clearInterval(countDownInterval);
+        
+        if (topWinner) stats["top"] += 1;
+        else stats["bottom"] += 1;
+
+        updateStatsScoreUI(topPlayerScore = stats['top'] , bottomPlayerScore = stats['bottom']);
+
+        gameMenu(visible=true, topView180 = !topWinner);
+        layerContainerVisiblity(visible= true);
+
+        sessionStorage.setItem("stats", JSON.stringify(stats));
+        return resetLayer();
+      }
+      return 0;
+    };
+
+    const updateStatsScoreUI = (topPlayerScore, bottomPlayerScore) =>{
+        document.querySelector("#topPlayerScore").innerHTML = topPlayerScore
+        document.querySelector("#bottomPlayerScore").innerHTML = bottomPlayerScore
+    }
+
+    const getTopPlayerScore = () => {
+      return parseFloat(window.getComputedStyle(topPlayer).height.match(/\d+/));
+    };
+    
+    const getBottomPlayerScore = () => {
+      return parseFloat(screenH - getTopPlayerScore());
+    };
+
+    const setTopPlayerScore = (increment) => {
+      topPlayer.style.height =
+        getTopPlayerScore() + increment > 0
+          ? `${getTopPlayerScore() + increment}px`
+          : "0px";
+    };
+
+    const checkWinner = (timesup = false) => {
+
+      if (getTopPlayerScore() >= screenH || (timesup && (getTopPlayerScore() >= getBottomPlayerScore()) )) {
+        // console.log("Player Top winner!");
+        updateStatsScore((topWinner = true));
+        beginGame = false;
+        timesUp = false;
+        return 0;
+      }
+      
+      if (((getTopPlayerScore() == 0 && (topPlayerTapCounts || bottomPlayerTapCounts))) 
+      || (timesup && (getTopPlayerScore() <= getBottomPlayerScore()) )) {
+        // console.log("Player Bottom winner!");
+        updateStatsScore((topWinner = false));
+        beginGame = false;
+        timesUp = false;
+        return 0;
+      }
+
+    };
+    
+    
+    const clearSession = () =>{
+      sessionStorage.clear()
+      return location.reload()
+    }
+    
+    const logStats = () => {
+      console.log("screen : " + screenW + " x " + screenH);
+      console.log("Player top : " + getTopPlayerScore());
+      console.log("Player bottom : " + (getBottomPlayerScore()));
+      console.log("Session Stats  : " + JSON.stringify(getStats()));
+    };
+
+    // GAME
+    topPlayer.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (!beginGame) updateStatsScore((topWinner = false));
+      else{
+        topPlayerTapCounts++;
+        setTopPlayerScore(increment);
+        checkWinner();
+      }
+    });
+
+    bottomPlayer.addEventListener("click", (event) => {
+      if (!beginGame) updateStatsScore((topWinner = true));
+      else{
+      bottomPlayerTapCounts++;
+      setTopPlayerScore(-increment);
+      checkWinner();}
+    });
+
+
+    setDynamicIncrement();
+    newGame();
+  </script>
+</body></html>
